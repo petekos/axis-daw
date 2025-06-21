@@ -484,7 +484,7 @@ export function SynthesizerControls({
                   />
                 </div>
                 <div>
-                  {params.pitchEnvAmount !== undefined ? params.pitchEnvAmount.toFixed(1) : "0.0"}st</label>
+                 <label> {params.pitchEnvAmount !== undefined ? params.pitchEnvAmount.toFixed(1) : "0.0" } st</label>
                   <Slider
                     value={[params.pitchEnvAmount]}
                     onValueChange={(value) => {
