@@ -57,7 +57,7 @@ export const EnvelopeEditor: React.FC<EnvelopeEditorProps> = ({
   // Drag logic (simplified for demo)
   const handlePointerDown = (idx: number) => (e: React.PointerEvent) => {
     setDragIdx(idx)
-    (e.target as Element).setPointerCapture(e.pointerId)
+    ;(e.target as Element).setPointerCapture(e.pointerId)
   }
   const handlePointerMove = (e: React.PointerEvent) => {
     if (dragIdx === null) return
