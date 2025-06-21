@@ -186,8 +186,9 @@ export function TrackView({ state, onStateChange, onEditClip, defaultSynthParams
       <div className="flex-1 flex overflow-hidden">
         
         {/* Track Headers */}
-        <div className="flex-none w-64 bg-slate-800 border-r border-slate-600 overflow-y-auto py-6 pb-[0] pt-8">
+        <div className="flex-none w-64 bg-slate-800 border-r border-slate-600 overflow-y-auto ">
           <Button
+          size= "icon"
           onClick={addTrack}
           className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
         >
