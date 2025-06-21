@@ -194,68 +194,6 @@ export function TrackView({ state, onStateChange, onEditClip, defaultSynthParams
               New Track
             </Button>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-4">
-              {/* Enhanced Transport Controls */}
-              <div className="flex items-center gap-2 px-3 py-2 bg-slate-900 rounded-lg border border-slate-600">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => updateState({ isPlaying: false, currentTime: 0 })}
-                  className="bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200"
-                >  
-                  <Square className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={state.isPlaying ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => updateState({ isPlaying: !state.isPlaying })}
-                  className={
-                    state.isPlaying
-                      ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-0"
-                      : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200"
-                  }
-                >
-                  {state.isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                </Button>
-              </div>
-
-              {/* Time Display */}
-              <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-lg border border-slate-600">
-                <span className="text-slate-200 font-mono text-sm font-medium">
-                  {Math.floor(state.currentTime / 4) + 1}:{Math.floor(state.currentTime % 4) + 1}
-                </span>
-              </div>
-
-              {/* BPM Control */}
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="text-sm">BPM:</span>
-                <Input
-                  type="number"
-                  value={state.bpm}
-                  onChange={(e) => updateState({ bpm: Number.parseInt(e.target.value) || 120 })}
-                  className="w-16 h-8 bg-slate-800 border-slate-600 text-slate-200"
-                  min="60"
-                  max="200"
-                />
-              </div>
-
-              {/* Zoom Control */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-300">Zoom:</span>
-                <Slider
-                  value={[state.zoom]}
-                  onValueChange={(value) => updateState({ zoom: value[0] })}
-                  min={0.5}
-                  max={3}
-                  step={0.1}
-                  className="w-20"
-                />
-                <span className="text-sm text-slate-300 font-mono w-8">{state.zoom.toFixed(1)}x</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -267,87 +205,84 @@ export function TrackView({ state, onStateChange, onEditClip, defaultSynthParams
             {state.tracks.map((track) => (
               <div
                 key={track.id}
-                className={`p-3 border cursor-pointer transition-all h-50 px-0 py-0 h-[77px] rounded-none ${
-                  track.isSelected ? "border-blue-500 bg-slate-700" : "border-slate-600 bg-slate-800 hover:bg-slate-700"
-                }`}
+                className={`p-3 border cursor-pointer transition-all h-50 px-0 py-0 h-[77px] rounded-none ${track.isSelected ? "border-blue-500 bg-slate-700" : "border-slate-600 bg-slate-800 hover:bg-slate-700"
+                  }`}
                 onClick={() => selectTrack(track.id)}
               >
-                <div className="flex mb-0 justify-start items-start flex-row rounded-none"> 
+                <div className="flex mb-0 justify-start items-start flex-row rounded-none">
                   <div className="w-3 px-0 mx-0 mr-1.5 rounded-none h-[75px]" style={{ backgroundColor: track.color }} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-stretch justify-start">
-                        <Input
-                          value={track.name}
-                          onChange={(e) => updateTrack(track.id, { name: e.target.value })}
-                          className="text-sm bg-transparent border-none p-0 text-slate-200 font-medium h-6"
-                          onClick={(e) => e.stopPropagation()}
-                        /> 
-                       <Button
+                      <Input
+                        value={track.name}
+                        onChange={(e) => updateTrack(track.id, { name: e.target.value })}
+                        className="text-sm bg-transparent border-none p-0 text-slate-200 font-medium h-6"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <Button
                         variant="ghost"
                         size="sm"
                         onClick={(e) => {
-                            e.stopPropagation()
-                            onEditClip(track.id, "")
-                          }}
+                          e.stopPropagation()
+                          onEditClip(track.id, "")
+                        }}
                         className="h-6 w-6 p-0 text-slate-400 hover:text-white"
-                       >
+                      >
                         <Settings className="w-3 h-3" />
-                    </Button>
-                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        deleteTrack(track.id)
-                      }}
-                      className="h-6 w-6 p-0 text-slate-400 hover:text-red-400"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant={track.muted ? "default" : "ghost"}
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        updateTrack(track.id, { muted: !track.muted })
-                      }}
-                      className={`h-6 text-xs px-1 ${
-                        track.muted ? "bg-red-600 hover:bg-red-700" : "text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      {track.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                    </Button>
-                    <Button
-                      variant={track.soloed ? "default" : "ghost"}
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        updateTrack(track.id, { soloed: !track.soloed })
-                      }}
-                      className={`h-6 text-xs px-1 ${
-                        track.soloed ? "bg-yellow-600 hover:bg-yellow-700" : "text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      <Headphones className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  <div className="flex justify-start bg-transparent flex-row w-45 my-1.5 pr-1.5">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs text-slate-400 mx-0 mr-1.5">{Math.round(track.volume * 100)}%</span>
-                        </div>
-                        <Slider
-                      value={[track.volume]}
-                      onValueChange={(value) => updateTrack(track.id, { volume: value[0] })}
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      className="h-2 my-1 opacity-100 opacity-50"
-                      onClick={(e) => e.stopPropagation()}
-                        />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteTrack(track.id)
+                        }}
+                        className="h-6 w-6 p-0 text-slate-400 hover:text-red-400"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant={track.muted ? "default" : "ghost"}
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          updateTrack(track.id, { muted: !track.muted })
+                        }}
+                        className={`h-6 text-xs px-1 ${track.muted ? "bg-red-600 hover:bg-red-700" : "text-slate-400 hover:text-white"
+                          }`}
+                      >
+                        {track.muted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                      </Button>
+                      <Button
+                        variant={track.soloed ? "default" : "ghost"}
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          updateTrack(track.id, { soloed: !track.soloed })
+                        }}
+                        className={`h-6 text-xs px-1 ${track.soloed ? "bg-yellow-600 hover:bg-yellow-700" : "text-slate-400 hover:text-white"
+                          }`}
+                      >
+                        <Headphones className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="flex justify-start bg-transparent flex-row w-45 my-1.5 pr-1.5">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-slate-400 mx-0 mr-1.5">{Math.round(track.volume * 100)}%</span>
+                      </div>
+                      <Slider
+                        value={[track.volume]}
+                        onValueChange={(value) => updateTrack(track.id, { volume: value[0] })}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="h-2 my-1 opacity-100 opacity-50"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div> 
-            </div>
+              </div>
             ))}
           </div>
         </div>
