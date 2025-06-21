@@ -13,7 +13,7 @@ export interface SynthParams {
   // Noise Source
   noiseEnabled: boolean
   noiseLevel: number // 0-1
-  noiseType: "white" | "pink"
+  noiseType: "white" | "pink" | "brown"
 
   // Fixed Pitch
   fixedPitchMode: boolean // If true, use fixedPitch instead of MIDI note
@@ -421,7 +421,7 @@ class Voice {
     }
   }
 
-  private createNoiseBufferSource(audioContext: AudioContext, type: "white" | "pink" = "white"): AudioBufferSourceNode {
+  private createNoiseBufferSource(audioContext: AudioContext, type: "white" | "pink" | "brown" = "white"): AudioBufferSourceNode {
     const bufferSize = 2 * audioContext.sampleRate
     const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate)
     const output = buffer.getChannelData(0)
@@ -442,6 +442,14 @@ class Voice {
         output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362
         output[i] *= 0.11 // (roughly) compensate for gain
         b6 = white * 0.115926
+      }
+    } else if (type === "brown") {
+      let lastOut = 0
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1
+        output[i] = (lastOut + (0.02 * white)) / 1.02
+        lastOut = output[i]
+        output[i] *= 3.5 // (roughly) compensate for gain
       }
     }
     const noise = audioContext.createBufferSource()

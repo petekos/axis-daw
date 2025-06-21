@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Clock, Music, Settings, Zap } from "lucide-reac
 import type { SynthParams } from "../utils/synthesizer"
 import { PresetManagerComponent } from "./preset-manager"
 import { MUSICAL_DIVISIONS, bpmToSeconds, bpmToHz } from "../utils/synthesizer"
+import { EnvelopeEditor, EnvelopeParams } from "./envelope-editor"
 
 interface SynthesizerControlsProps {
   params: SynthParams
@@ -228,60 +229,22 @@ export function SynthesizerControls({
             {/* Amplitude Envelope */}
             <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
               <div className="text-sm font-medium mb-3 text-slate-200">Amp Envelope</div>
-              <div className="space-y-2">
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">
-                    A: {(params.attackTime * 1000).toFixed(0)}ms
-                  </label>
-                  <Slider
-                    value={[params.attackTime]}
-                    onValueChange={(value) => updateParam("attackTime", value[0])}
-                    min={0.001}
-                    max={2}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-green-500 [&_[role=slider]]:to-emerald-600 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">
-                    D: {(params.decayTime * 1000).toFixed(0)}ms
-                  </label>
-                  <Slider
-                    value={[params.decayTime]}
-                    onValueChange={(value) => updateParam("decayTime", value[0])}
-                    min={0.001}
-                    max={2}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-green-500 [&_[role=slider]]:to-emerald-600 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">
-                    S: {(params.sustainLevel * 100).toFixed(0)}%
-                  </label>
-                  <Slider
-                    value={[params.sustainLevel]}
-                    onValueChange={(value) => updateParam("sustainLevel", value[0])}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-green-500 [&_[role=slider]]:to-emerald-600 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">
-                    R: {(params.releaseTime * 1000).toFixed(0)}ms
-                  </label>
-                  <Slider
-                    value={[params.releaseTime]}
-                    onValueChange={(value) => updateParam("releaseTime", value[0])}
-                    min={0.001}
-                    max={3}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-green-500 [&_[role=slider]]:to-emerald-600 [&_[role=slider]]:border-0"
-                  />
-                </div>
-              </div>
+              <EnvelopeEditor
+                params={{
+                  attack: params.attackTime,
+                  decay: params.decayTime,
+                  sustain: params.sustainLevel,
+                  release: params.releaseTime,
+                }}
+                onChange={(env: EnvelopeParams) => {
+                  updateParam("attackTime", env.attack)
+                  updateParam("decayTime", env.decay)
+                  updateParam("sustainLevel", env.sustain)
+                  updateParam("releaseTime", env.release)
+                }}
+                width={240}
+                height={100}
+              />
             </div>
 
             {/* Filter */}
@@ -330,77 +293,25 @@ export function SynthesizerControls({
             {/* Filter Envelope */}
             <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
               <div className="text-sm font-medium mb-3 text-slate-200">Filter Env</div>
-              <div className="space-y-2">
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">
-                    Amt: {(params.filterEnvelopeAmount * 100).toFixed(0)}%
-                  </label>
-                  <Slider
-                    value={[params.filterEnvelopeAmount]}
-                    onValueChange={(value) => updateParam("filterEnvelopeAmount", value[0])}
-                    min={0}
-                    max={5}
-                    step={0.01}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-500 [&_[role=slider]]:to-orange-600 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-1">
-                  <div>
-                    <label className="text-xs text-slate-400 font-medium">
-                      A: {(params.filterAttackTime * 1000).toFixed(0)}
-                    </label>
-                    <Slider
-                      value={[params.filterAttackTime]}
-                      onValueChange={(value) => updateParam("filterAttackTime", value[0])}
-                      min={0.001}
-                      max={2}
-                      step={0.001}
-                      className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-500 [&_[role=slider]]:to-orange-600 [&_[role=slider]]:border-0"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-400 font-medium">
-                      D: {(params.filterDecayTime * 1000).toFixed(0)}
-                    </label>
-                    <Slider
-                      value={[params.filterDecayTime]}
-                      onValueChange={(value) => updateParam("filterDecayTime", value[0])}
-                      min={0.001}
-                      max={2}
-                      step={0.001}
-                      className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-500 [&_[role=slider]]:to-orange-600 [&_[role=slider]]:border-0"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-1">
-                  <div>
-                    <label className="text-xs text-slate-400 font-medium">
-                      S: {(params.filterSustainLevel * 100).toFixed(0)}
-                    </label>
-                    <Slider
-                      value={[params.filterSustainLevel]}
-                      onValueChange={(value) => updateParam("filterSustainLevel", value[0])}
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-500 [&_[role=slider]]:to-orange-600 [&_[role=slider]]:border-0"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-400 font-medium">
-                      R: {(params.filterReleaseTime * 1000).toFixed(0)}
-                    </label>
-                    <Slider
-                      value={[params.filterReleaseTime]}
-                      onValueChange={(value) => updateParam("filterReleaseTime", value[0])}
-                      min={0.001}
-                      max={3}
-                      step={0.001}
-                      className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-500 [&_[role=slider]]:to-orange-600 [&_[role=slider]]:border-0"
-                    />
-                  </div>
-                </div>
-              </div>
+              <EnvelopeEditor
+                params={{
+                  attack: params.filterAttackTime,
+                  decay: params.filterDecayTime,
+                  sustain: params.filterSustainLevel,
+                  release: params.filterReleaseTime,
+                  amount: params.filterEnvelopeAmount,
+                }}
+                onChange={(env: EnvelopeParams) => {
+                  updateParam("filterAttackTime", env.attack)
+                  updateParam("filterDecayTime", env.decay)
+                  updateParam("filterSustainLevel", env.sustain)
+                  updateParam("filterReleaseTime", env.release)
+                  updateParam("filterEnvelopeAmount", env.amount ?? params.filterEnvelopeAmount)
+                }}
+                width={240}
+                height={100}
+                showAmount={true}
+              />
             </div>
 
             {/* Fixed Pitch Mode */}
@@ -438,65 +349,73 @@ export function SynthesizerControls({
             {/* Pitch Envelope */}
             <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
               <div className="text-sm font-medium mb-3 text-slate-200">Pitch Envelope</div>
-              <div className="space-y-2">
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">A: {(params.pitchEnvAttack * 1000).toFixed(0)}ms</label>
-                  <Slider
-                    value={[params.pitchEnvAttack]}
-                    onValueChange={(value) => updateParam("pitchEnvAttack", value[0])}
-                    min={0.001}
-                    max={2}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">D: {(params.pitchEnvDecay * 1000).toFixed(0)}ms</label>
-                  <Slider
-                    value={[params.pitchEnvDecay]}
-                    onValueChange={(value) => updateParam("pitchEnvDecay", value[0])}
-                    min={0.001}
-                    max={2}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">S: {(params.pitchEnvSustain * 100).toFixed(0)}%</label>
-                  <Slider
-                    value={[params.pitchEnvSustain]}
-                    onValueChange={(value) => updateParam("pitchEnvSustain", value[0])}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 font-medium">R: {(params.pitchEnvRelease * 1000).toFixed(0)}ms</label>
-                  <Slider
-                    value={[params.pitchEnvRelease]}
-                    onValueChange={(value) => updateParam("pitchEnvRelease", value[0])}
-                    min={0.001}
-                    max={3}
-                    step={0.001}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
-                  />
-                </div>
-                <div>
-                 <label> {params.pitchEnvAmount !== undefined ? params.pitchEnvAmount.toFixed(1) : "0.0" } st</label>
-                  <Slider
-                    value={[params.pitchEnvAmount]}
-                    onValueChange={(value) => {
-                      if (typeof value[0] === "number") updateParam("pitchEnvAmount", value[0])
-                    }}
-                    min={-24}
-                    max={24}
-                    step={0.1}
-                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
-                  />
-                </div>
+              <EnvelopeEditor
+                params={{
+                  attack: params.pitchEnvAttack,
+                  decay: params.pitchEnvDecay,
+                  sustain: params.pitchEnvSustain,
+                  release: params.pitchEnvRelease,
+                  amount: params.pitchEnvAmount,
+                }}
+                onChange={(env: EnvelopeParams) => {
+                  updateParam("pitchEnvAttack", env.attack)
+                  updateParam("pitchEnvDecay", env.decay)
+                  updateParam("pitchEnvSustain", env.sustain)
+                  updateParam("pitchEnvRelease", env.release)
+                  updateParam("pitchEnvAmount", env.amount ?? params.pitchEnvAmount)
+                }}
+                width={240}
+                height={100}
+                showAmount={true}
+              />
+            </div>
+
+            {/* Noise Source */}
+            <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
+              <div className="text-sm font-medium mb-3 flex items-center justify-between text-slate-200">
+                <span>Noise</span>
+                <Button
+                  variant={params.noiseEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateParam("noiseEnabled", !params.noiseEnabled)}
+                  className={
+                    params.noiseEnabled
+                      ? "h-5 px-2 text-xs bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 border-0"
+                      : "h-5 px-2 text-xs bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-300"
+                  }
+                >
+                  {params.noiseEnabled ? "ON" : "OFF"}
+                </Button>
               </div>
+              {params.noiseEnabled && (
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs text-slate-400 font-medium">
+                      Level: {(params.noiseLevel * 100).toFixed(0)}%
+                    </label>
+                    <Slider
+                      value={[params.noiseLevel]}
+                      onValueChange={(value) => updateParam("noiseLevel", value[0])}
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-yellow-600 [&_[role=slider]]:border-0"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 font-medium">Type</label>
+                    <select
+                      value={params.noiseType}
+                      onChange={(e) => updateParam("noiseType", e.target.value as "white" | "pink" | "brown")}
+                      className="w-full px-2 py-1 text-xs bg-slate-800 border border-slate-600 rounded text-slate-200 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+                    >
+                      <option value="white">White</option>
+                      <option value="pink">Pink</option>
+                      <option value="brown">Brown</option>
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
