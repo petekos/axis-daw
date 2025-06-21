@@ -141,7 +141,7 @@ export default function DAWEditor() {
   const [scrollTop, setScrollTop] = useState(0)
   const [playingNotes, setPlayingNotes] = useState<Set<number>>(new Set())
   const [synthesizers, setSynthesizers] = useState<Map<string, Synthesizer>>(new Map())
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | undefined>(undefined)
   const lastPlayingNotes = useRef<Map<string, Set<number>>>(new Map())
   const pianoRollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -427,7 +427,40 @@ export default function DAWEditor() {
                   <h1 className="text-xl font-bold text-white">AXIS</h1>
                 </div>
               </div>
-             <TransportControls zoom="1" />
+
+            <TransportControls
+              isPlaying={trackViewState.isPlaying}
+              currentTime={trackViewState.currentTime}
+              bpm={trackViewState.bpm}
+              isLooping={pianoRollState.isLooping}
+              loopStart={pianoRollState.loopStart}
+              loopEnd={pianoRollState.loopEnd}
+              zoom={trackViewState.zoom}
+              onPlay={() =>
+                setTrackViewState((prev) => ({ ...prev, isPlaying: true }))
+              }
+              onPause={() =>
+                setTrackViewState((prev) => ({ ...prev, isPlaying: false }))
+              }
+              onStop={() =>
+                setTrackViewState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }))
+              }
+              onBpmChange={(bpm: number) =>
+                setTrackViewState((prev) => ({ ...prev, bpm }))
+              }
+              onZoomChange={(zoom: number) =>
+                setTrackViewState((prev) => ({ ...prev, zoom }))
+              }
+              onLoopToggle={() =>
+                setPianoRollState((prev) => ({ ...prev, isLooping: !prev.isLooping }))
+              }
+              onLoopStartChange={(start: number) =>
+                setPianoRollState((prev) => ({ ...prev, loopStart: start }))
+              }
+              onLoopEndChange={(end: number) =>
+                setPianoRollState((prev) => ({ ...prev, loopEnd: end }))
+              }
+            />
               <div className="flex items-center gap-2">
                 <Button variant="outline" className="bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200">
                   <FolderOpen className="w-4 h-4 mr-2" />
@@ -551,7 +584,7 @@ export default function DAWEditor() {
             onParamsChange={handleSynthParamsChange}
             onTestNote={handleTestNote}
             currentBpm={trackViewState.bpm}
-            isMinimized={isEditingClip} // Minimize when editing clip, expand when editing synthesizer
+            isMinimized={!!isEditingClip} // Minimize when editing clip, expand when editing synthesizer
           />
         </div>
       )}
