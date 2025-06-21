@@ -4,7 +4,7 @@ import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
-import { Plus, Play, Pause, Square, Volume2, VolumeX, Headphones, Trash2, Copy, Music, Settings } from "lucide-react"
+import { Plus, Volume2, VolumeX, Headphones, Trash2, Copy, Music, Settings } from "lucide-react"
 import type { Track, Clip, TrackViewState } from "../types/track"
 import type { SynthParams } from "../utils/synthesizer"
 
