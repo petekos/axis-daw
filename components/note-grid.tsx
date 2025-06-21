@@ -653,7 +653,6 @@ export function NoteGrid({
         height={gridHeight}
         className={cursorStyle}
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
       />
     </div>
