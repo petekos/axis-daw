@@ -182,23 +182,15 @@ export function TrackView({ state, onStateChange, onEditClip, defaultSynthParams
 
   return (
     <div className="h-full flex flex-col bg-slate-900">
-      {/* Header */}
-      <div className="flex-none bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600 p-4 py-1.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={addTrack}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Track
-            </Button>
-          </div>
-        </div>
-      </div>
-
       {/* Track List */}
       <div className="flex-1 flex overflow-hidden">
+        <Button
+          onClick={addTrack}
+          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Track
+        </Button>
         {/* Track Headers */}
         <div className="flex-none w-64 bg-slate-800 border-r border-slate-600 overflow-y-auto py-6 pb-[0] pt-8">
           <div className="p-2 space-y-1 pt-0 pl-0 pr-0">

@@ -40,7 +40,7 @@ export function TransportControls({
   onLoopEndChange,
 }: TransportControlsProps) {
   return (
-    <div className="flex items-center gap-6 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700">
+    <div className="flex items-center gap-6  bg-gradient-to-r from-slate-800 to-slate-700">
       {/* Transport buttons with modern styling */}
       <div className="flex items-center gap-2">
         <Button
@@ -136,7 +136,6 @@ export function TransportControls({
 
       {/* BPM control with modern styling */}
       <div className="flex items-center gap-3 px-3 py-2 bg-slate-900 rounded-lg border border-slate-600">
-        <Zap className="w-4 h-4 text-slate-400" />
         <label className="text-sm text-slate-400 font-medium">BPM:</label>
         <input
           type="number"
