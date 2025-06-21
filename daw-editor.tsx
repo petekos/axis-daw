@@ -12,6 +12,8 @@ import type { MidiNote, PianoRollState } from "./types/midi"
 import type { TrackViewState } from "./types/track"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Save, FolderOpen } from "lucide-react"
+import { upload } from "@vercel/blob/client"
+import { useState as useDialogState } from "react"
 
 const defaultSynthParams: SynthParams = {
   waveform: "sawtooth",
@@ -149,6 +151,11 @@ export default function DAWEditor() {
   const endNote = 96
   const keyHeight = 20
   const pixelsPerBeat = 100
+
+  // Load dialog state
+  const [showLoadDialog, setShowLoadDialog] = useDialogState(false)
+  const [loadUrl, setLoadUrl] = useDialogState("")
+  const [loadError, setLoadError] = useDialogState("")
 
   // Initialize synthesizers for each track
   useEffect(() => {
@@ -412,6 +419,45 @@ export default function DAWEditor() {
   const isEditingSynthesizer = currentEditingClip && !currentEditingClip.clipId
   const isEditingClip = currentEditingClip && currentEditingClip.clipId
 
+  // Upload app state to Vercel Blob Storage
+  const handleSaveToBlob = useCallback(async () => {
+    const state = {
+      trackViewState,
+      pianoRollState,
+      currentEditingClip,
+    }
+    const file = new File([JSON.stringify(state, null, 2)], "axis-daw-state.json", { type: "application/json" })
+    try {
+      const { url } = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/blob/upload"
+      })
+      alert(`State saved! Download URL: ${url}`)
+    } catch (err) {
+      alert("Failed to save state: " + (err instanceof Error ? err.message : String(err)))
+    }
+  }, [trackViewState, pianoRollState, currentEditingClip])
+
+  // Load project state from Vercel Blob URL
+  const handleLoadFromBlob = useCallback(async () => {
+    setLoadError("")
+    try {
+      const res = await fetch(loadUrl)
+      if (!res.ok) throw new Error("Failed to fetch file")
+      const data = await res.json()
+      if (data.trackViewState && data.pianoRollState) {
+        setTrackViewState(data.trackViewState)
+        setPianoRollState(data.pianoRollState)
+        setCurrentEditingClip(data.currentEditingClip || null)
+        setShowLoadDialog(false)
+      } else {
+        throw new Error("Invalid file format")
+      }
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : String(err))
+    }
+  }, [loadUrl])
+
   if (trackViewState.viewMode === "tracks") {
     return (
       <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -465,7 +511,11 @@ export default function DAWEditor() {
                 <Button variant="outline" className="bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200">
                   <FolderOpen className="w-4 h-4 mr-2" />
                 </Button>
-                <Button variant="outline" className="bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200">
+                <Button
+                  variant="outline"
+                  className="bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200"
+                  onClick={handleSaveToBlob}
+                >
                   <Save className="w-4 h-4 mr-2" />
                 </Button>
               </div>
@@ -586,6 +636,27 @@ export default function DAWEditor() {
             currentBpm={trackViewState.bpm}
             isMinimized={!!isEditingClip} // Minimize when editing clip, expand when editing synthesizer
           />
+        </div>
+      )}
+
+      {/* Load Dialog */}
+      {showLoadDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-slate-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-bold mb-2 text-white">Load Project from Vercel Blob</h2>
+            <input
+              type="text"
+              className="w-full p-2 rounded border border-slate-600 bg-slate-900 text-slate-200 mb-2"
+              placeholder="Paste Vercel Blob URL here..."
+              value={loadUrl}
+              onChange={e => setLoadUrl(e.target.value)}
+            />
+            {loadError && <div className="text-red-400 text-sm mb-2">{loadError}</div>}
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowLoadDialog(false)}>Cancel</Button>
+              <Button onClick={handleLoadFromBlob} disabled={!loadUrl.trim()}>Load</Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

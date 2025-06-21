@@ -17,6 +17,10 @@ const defaultSynthParams: SynthParams = {
   osc2Detune: -7,
   osc2Level: 0.5,
   phaseModAmount: 0,
+  // Noise
+  noiseEnabled: false,
+  noiseLevel: 0.2,
+  noiseType: "white",
   attackTime: 0.01,
   decayTime: 0.3,
   sustainLevel: 0.7,
