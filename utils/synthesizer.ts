@@ -15,11 +15,22 @@ export interface SynthParams {
   noiseLevel: number // 0-1
   noiseType: "white" | "pink"
 
+  // Fixed Pitch
+  fixedPitchMode: boolean // If true, use fixedPitch instead of MIDI note
+  fixedPitch: number // Hz
+
   // Amplitude Envelope
   attackTime: number
   decayTime: number
   sustainLevel: number
   releaseTime: number
+
+  // Pitch Envelope
+  pitchEnvAttack: number
+  pitchEnvDecay: number
+  pitchEnvSustain: number
+  pitchEnvRelease: number
+  pitchEnvAmount: number // in semitones
 
   // Filter
   filterType: BiquadFilterType
@@ -513,14 +524,31 @@ class Voice {
     if (this.isPlaying) return
 
     const now = this.audioContext.currentTime
-    const frequency = this.midiNoteToFrequency(midiNote)
+    // Determine base frequency
+    let frequency = this.params.fixedPitchMode ? this.params.fixedPitch : this.midiNoteToFrequency(midiNote)
     this.baseFrequency = frequency
     const normalizedVelocity = velocity / 127
 
+    // Pitch envelope
+    const pitchEnvAmt = this.params.pitchEnvAmount
+    const envA = this.params.pitchEnvAttack
+    const envD = this.params.pitchEnvDecay
+    const envS = this.params.pitchEnvSustain
+    const envR = this.params.pitchEnvRelease
+    // Start at pitch + amount, decay to base
+    const freqStart = frequency * Math.pow(2, pitchEnvAmt / 12)
+    const freqSustain = frequency * Math.pow(2, (pitchEnvAmt * envS) / 12)
+
     // Set oscillator frequencies
-    this.oscillator1.frequency.setValueAtTime(frequency, now)
+    this.oscillator1.frequency.setValueAtTime(freqStart, now)
+    this.oscillator1.frequency.linearRampToValueAtTime(freqSustain, now + envA)
+    this.oscillator1.frequency.linearRampToValueAtTime(frequency, now + envA + envD)
+    // Sustain at base frequency
+    // Release handled in stop()
     if (this.oscillator2) {
-      this.oscillator2.frequency.setValueAtTime(frequency, now)
+      this.oscillator2.frequency.setValueAtTime(freqStart, now)
+      this.oscillator2.frequency.linearRampToValueAtTime(freqSustain, now + envA)
+      this.oscillator2.frequency.linearRampToValueAtTime(frequency, now + envA + envD)
     }
 
     // Start oscillators
@@ -528,24 +556,19 @@ class Voice {
     if (this.oscillator2) {
       this.oscillator2.start(now)
     }
-
     // Start noise
     if (this.noiseSource) {
       this.noiseSource.start(now)
     }
-
     // Start LFO
     if (this.lfo) {
       this.lfo.start(now)
     }
-
     // Start phaser LFO
     if (this.phaserLFO) {
       this.phaserLFO.start(now)
     }
-
     this.isPlaying = true
-
     // Amplitude envelope
     const maxGain = this.params.masterVolume * normalizedVelocity
     this.amplitudeGain.gain.setValueAtTime(0, now)
@@ -554,12 +577,10 @@ class Voice {
       maxGain * this.params.sustainLevel,
       now + this.params.attackTime + this.params.decayTime,
     )
-
     // Filter envelope
     const baseFreq = this.params.filterFrequency
     const envelopeAmount = this.params.filterEnvelopeAmount
     const maxFilterFreq = Math.min(baseFreq + baseFreq * envelopeAmount, 20000)
-
     this.filter.frequency.setValueAtTime(baseFreq, now)
     this.filter.frequency.linearRampToValueAtTime(maxFilterFreq, now + this.params.filterAttackTime)
     this.filter.frequency.linearRampToValueAtTime(

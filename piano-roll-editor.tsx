@@ -21,6 +21,15 @@ const defaultSynthParams: SynthParams = {
   noiseEnabled: false,
   noiseLevel: 0.2,
   noiseType: "white",
+  // Fixed Pitch
+  fixedPitchMode: false,
+  fixedPitch: 440,
+  // Pitch Envelope
+  pitchEnvAttack: 0.01,
+  pitchEnvDecay: 0.2,
+  pitchEnvSustain: 0.0,
+  pitchEnvRelease: 0.2,
+  pitchEnvAmount: 0,
   attackTime: 0.01,
   decayTime: 0.3,
   sustainLevel: 0.7,

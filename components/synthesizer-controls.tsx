@@ -402,6 +402,100 @@ export function SynthesizerControls({
                 </div>
               </div>
             </div>
+
+            {/* Fixed Pitch Mode */}
+            <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
+              <div className="text-sm font-medium mb-3 flex items-center justify-between text-slate-200">
+                <span>Fixed Pitch</span>
+                <Button
+                  variant={params.fixedPitchMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateParam("fixedPitchMode", !params.fixedPitchMode)}
+                  className={
+                    params.fixedPitchMode
+                      ? "h-5 px-2 text-xs bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 border-0"
+                      : "h-5 px-2 text-xs bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-300"
+                  }
+                >
+                  {params.fixedPitchMode ? "ON" : "OFF"}
+                </Button>
+              </div>
+              {params.fixedPitchMode && (
+                <div className="space-y-2">
+                  <label className="text-xs text-slate-400 font-medium">Pitch (Hz): {params.fixedPitch.toFixed(1)}</label>
+                  <Slider
+                    value={[params.fixedPitch]}
+                    onValueChange={(value) => updateParam("fixedPitch", value[0])}
+                    min={20}
+                    max={2000}
+                    step={0.1}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-pink-500 [&_[role=slider]]:to-red-500 [&_[role=slider]]:border-0"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Pitch Envelope */}
+            <div className="bg-slate-900 rounded-lg border border-slate-600 p-3 shadow-lg">
+              <div className="text-sm font-medium mb-3 text-slate-200">Pitch Envelope</div>
+              <div className="space-y-2">
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">A: {(params.pitchEnvAttack * 1000).toFixed(0)}ms</label>
+                  <Slider
+                    value={[params.pitchEnvAttack]}
+                    onValueChange={(value) => updateParam("pitchEnvAttack", value[0])}
+                    min={0.001}
+                    max={2}
+                    step={0.001}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">D: {(params.pitchEnvDecay * 1000).toFixed(0)}ms</label>
+                  <Slider
+                    value={[params.pitchEnvDecay]}
+                    onValueChange={(value) => updateParam("pitchEnvDecay", value[0])}
+                    min={0.001}
+                    max={2}
+                    step={0.001}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">S: {(params.pitchEnvSustain * 100).toFixed(0)}%</label>
+                  <Slider
+                    value={[params.pitchEnvSustain]}
+                    onValueChange={(value) => updateParam("pitchEnvSustain", value[0])}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">R: {(params.pitchEnvRelease * 1000).toFixed(0)}ms</label>
+                  <Slider
+                    value={[params.pitchEnvRelease]}
+                    onValueChange={(value) => updateParam("pitchEnvRelease", value[0])}
+                    min={0.001}
+                    max={3}
+                    step={0.001}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Amount: {params.pitchEnvAmount.toFixed(1)} st</label>
+                  <Slider
+                    value={[params.pitchEnvAmount]}
+                    onValueChange={(value) => updateParam("pitchEnvAmount", value[0])}
+                    min={-24}
+                    max={24}
+                    step={0.1}
+                    className="h-3 [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-orange-400 [&_[role=slider]]:border-0"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Expandable Sections with modern styling */}
